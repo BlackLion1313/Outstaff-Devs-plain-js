@@ -14,7 +14,13 @@
 
 .blinking {
   animation: blink 3s infinite;
+
 }
+
+.table-hover tbody tr:hover {
+  cursor: pointer;
+}
+
 
 body, .navbar-nav .nav-link {
     font-family: 'Roboto', sans-serif;

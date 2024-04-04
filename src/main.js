@@ -16,7 +16,7 @@ async function functionsController() {
     createListWithUsers(users);
     createDropDown(users);
     setEventListeners(users);
-    filterByDropDown(users);
+    onOfTheme()
   } catch (error) {
     console.log('error', error);
   }
@@ -27,12 +27,23 @@ const createListWithUsers = (users) => {
   const tbody = document.getElementById('tbody');
   tbody.innerHTML = '';
 
+  let usersFound = false;
+
   users.forEach((user, i) => {
     if (isInDropdown(user) && isInput(user) && isGenderRadio(user)) {
+      usersFound = true;
+
       const row = document.createElement('tr');
+
+      row.setAttribute('data-bs-toggle', 'tooltip');
+      row.setAttribute('data-bs-placement', 'top');
+      row.setAttribute('title', 'click to see more details');
+      row.classList.add('pointer');
+
       row.addEventListener('click', () => {
         openModal(users[i]);
       });
+
       const tableH = document.createElement('th');
       tableH.scope = 'row';
       tableH.innerText = i + 1;
@@ -48,6 +59,17 @@ const createListWithUsers = (users) => {
       appendCellsToRow(row, [tableH, tdFirstName, tdLastName, tdAge, tdEmail, tdPhone, tdCity, tdState, tdCountry]);
       tbody.appendChild(row);
     }
+  });
+
+  if (!usersFound) {
+    document.getElementById('noResultsMessage').style.display = 'block';
+  } else {
+    document.getElementById('noResultsMessage').style.display = 'none';
+  }
+
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+    new bootstrap.Tooltip(tooltipTriggerEl);
   });
 };
 
@@ -97,7 +119,6 @@ const setEventListeners = (users) => {
   });
 };
 
-
 function openModal(user) {
   const modalContent = document.getElementById('modal-body');
   modalContent.innerHTML = `
@@ -136,3 +157,48 @@ const isGenderRadio = (user) => {
   const genderRadios = document.querySelector('input[type="radio"][name="genderFilter"]:checked').value;
   return genderRadios === 'all' || user.gender === genderRadios;
 };
+const onOfTheme = () => {
+  const btn = document.getElementById('theme_btn');
+  const body = document.body;
+  const modalContent = document.querySelector('.modal-content');
+  const navbar = document.querySelector('.navbar');
+  const navbarLinks = document.querySelectorAll('.navbar-nav .nav-link');
+  const table = document.querySelector('.table');
+  const searchTools = document.querySelector('.container.bg-secondary');
+
+  btn.addEventListener('click', () => {
+    if (body.classList.contains('bg-dark')) {
+      body.classList.remove('bg-dark', 'text-light');
+      body.classList.add('bg-light', 'text-dark');
+      navbar.classList.remove('bg-secondary');
+      navbar.classList.add('bg-light');
+      table.classList.remove('table-dark');
+      searchTools.classList.remove('bg-secondary');
+      searchTools.classList.add('bg-light');
+
+      navbarLinks.forEach(link => {
+        link.classList.remove('text-light');
+        link.classList.add('text-dark');
+      });
+
+      modalContent.classList.remove('bg-dark', 'text-light');
+      modalContent.classList.add('bg-light', 'text-dark');
+    } else {
+      body.classList.remove('bg-light', 'text-dark');
+      body.classList.add('bg-dark', 'text-light');
+      navbar.classList.remove('bg-light');
+      navbar.classList.add('bg-secondary');
+      table.classList.add('table-dark');
+      searchTools.classList.remove('bg-light');
+      searchTools.classList.add('bg-secondary');
+
+      navbarLinks.forEach(link => {
+        link.classList.remove('text-dark');
+        link.classList.add('text-light');
+      });
+
+      modalContent.classList.remove('bg-light', 'text-dark');
+      modalContent.classList.add('bg-dark', 'text-light');
+    }
+  });
+}
